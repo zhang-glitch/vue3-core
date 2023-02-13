@@ -173,16 +173,21 @@ export function h<P>(
 // Actual implementation
 export function h(type: any, propsOrChildren?: any, children?: any): VNode {
   const l = arguments.length
+  // 可能传递的是props或者children
   if (l === 2) {
+    // 传入对象
     if (isObject(propsOrChildren) && !isArray(propsOrChildren)) {
       // single vnode without props
-      if (isVNode(propsOrChildren)) {
+      if (isVNode(propsOrChildren)) { // 判断是否是一个组件 内部__v_isVNode可以判断是否是组件
+        // createVNode 最后一个参数只能接受数组
         return createVNode(type, null, [propsOrChildren])
       }
       // props without children
+      // 传入的是props
       return createVNode(type, propsOrChildren)
     } else {
       // omit props
+      // 数组直接传入
       return createVNode(type, null, propsOrChildren)
     }
   } else {

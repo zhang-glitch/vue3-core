@@ -31,6 +31,7 @@ export type PublicProps = VNodeProps &
   AllowedComponentProps &
   ComponentCustomProps
 
+  // 定义类型
 export type DefineComponent<
   PropsOrPropOptions = {},
   RawBindings = {},
@@ -86,6 +87,7 @@ export type DefineComponent<
 
 // overload 1: direct setup function
 // (uses user defined props interface)
+// 函数重载，这里只是声明。  函数的实行会考虑这些重载的定义
 export function defineComponent<Props, RawBindings = object>(
   setup: (
     props: Readonly<Props>,
@@ -96,6 +98,7 @@ export function defineComponent<Props, RawBindings = object>(
 // overload 2: object format with no props
 // (uses user defined props interface)
 // return type is for Vetur and TSX support
+// 未传递props
 export function defineComponent<
   Props = {},
   RawBindings = {},
@@ -127,6 +130,7 @@ export function defineComponent<
 // overload 3: object format with array props declaration
 // props inferred as { [key in PropNames]?: any }
 // return type is for Vetur and TSX support
+// props传递数组
 export function defineComponent<
   PropNames extends string,
   RawBindings,
@@ -167,6 +171,7 @@ export function defineComponent<
 
 // overload 4: object format with object props declaration
 // see `ExtractPropTypes` in ./componentProps.ts
+// props为对象结构
 export function defineComponent<
   // the Readonly constraint allows TS to treat the type of { required: true }
   // as constant instead of boolean.
@@ -198,6 +203,7 @@ export function defineComponent<
 ): DefineComponent<PropsOptions, RawBindings, D, C, M, Mixin, Extends, E, EE>
 
 // implementation, close to no-op
+// 如果是函数式组件，最终还是转化成composition api
 export function defineComponent(options: unknown) {
   return isFunction(options) ? { setup: options, name: options.name } : options
 }
