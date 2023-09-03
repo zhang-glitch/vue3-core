@@ -10,14 +10,28 @@
 </head>
 
 <body>
+  <div id="app"></div>
   <script>
-    const {computed}=Vue;
+    const { computed, reactive, effect } = Vue;
 
-    computed(() => {
-      console.log("执行")
-      return "a"
+    const obj = reactive({
+      name: "zh"
     })
-  </script>
+
+
+    const computedObj = computed(() => {
+      return "执行" + obj.name
+    })
+
+    effect(() => {
+      // 触发ComputedRefImpl 的 get value
+      document.getElementById("app").innerHTML = computedObj.value
+    })
+
+    setTimeout(() => {
+      obj.name = "llm"
+    }, 2000)
+  </script> 
 </body>
 
 </html>

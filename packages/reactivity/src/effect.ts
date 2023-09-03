@@ -354,7 +354,9 @@ export function triggerEffects(
 ) {
   // spread into array for stabilization
   const effects = isArray(dep) ? dep : [...dep]
+  // 2s后触发reactive setter方法，就会触发收集的依赖。
   for (const effect of effects) {
+    // 收集的是computed回调时
     if (effect.computed) {
       triggerEffect(effect, debuggerEventExtraInfo)
     }
@@ -374,6 +376,7 @@ function triggerEffect(
     if (__DEV__ && effect.onTrigger) {
       effect.onTrigger(extend({ effect }, debuggerEventExtraInfo))
     }
+    // 收集的是computed回调时，先调用调度器，也就是computedObj.value时触发get value 收集的依赖函数。
     if (effect.scheduler) {
       effect.scheduler()
     } else {

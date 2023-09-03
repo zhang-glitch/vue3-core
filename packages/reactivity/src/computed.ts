@@ -41,23 +41,33 @@ export class ComputedRefImpl<T> {
     isReadonly: boolean,
     isSSR: boolean
   ) {
+    // getter 是computed的回调
     this.effect = new ReactiveEffect(getter, () => {
       if (!this._dirty) {
         this._dirty = true
+        // 触发 () => {
+        //   dcoument.getElementById("app").innerHTML = computedObj.value
+        // }
         triggerRefValue(this)
       }
     })
+    // 证明此effect对象是computed
     this.effect.computed = this
     this.effect.active = this._cacheable = !isSSR
     this[ReactiveFlags.IS_READONLY] = isReadonly
   }
 
+  // effect执行时，computedObj.value触发此处的get value。将effect中的回调加入到依赖收集中
   get value() {
     // the computed ref may get wrapped by other proxies e.g. readonly() #3376
     const self = toRaw(this)
+    // 依赖收集，effect回调被收集
     trackRefValue(self)
+    // 第一次进入，computed回调被执行。然后触发reactive 的 getter方法，收集computed回调。（activeEffect = this 其实也就是收集this.effect对象）
+    // 2s后触发reactive 的 setter 方法。
     if (self._dirty || !self._cacheable) {
       self._dirty = false
+      // 返回computed回调的值
       self._value = self.effect.run()!
     }
     return self._value
