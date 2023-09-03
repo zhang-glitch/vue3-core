@@ -39,12 +39,12 @@ export function patchEvent(
 ) {
   // vei = vue event invokers
   const invokers = el._vei || (el._vei = {})
-  const existingInvoker = invokers[rawName]
+  const existingInvoker = invokers[rawName] // 缓存事件
   if (nextValue && existingInvoker) {
     // patch
     existingInvoker.value = nextValue
   } else {
-    const [name, options] = parseName(rawName)
+    const [name, options] = parseName(rawName) // 处理事件名称
     if (nextValue) {
       // add
       const invoker = (invokers[rawName] = createInvoker(nextValue, instance))

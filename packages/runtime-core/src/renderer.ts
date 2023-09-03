@@ -998,6 +998,7 @@ function baseCreateRenderer(
   ) => {
     if (oldProps !== newProps) {
       if (oldProps !== EMPTY_OBJ) {
+        // 遍历旧的props。这里会卸载一些内容。
         for (const key in oldProps) {
           if (!isReservedProp(key) && !(key in newProps)) {
             hostPatchProp(
@@ -1014,6 +1015,7 @@ function baseCreateRenderer(
           }
         }
       }
+      // 遍历新的props
       for (const key in newProps) {
         // empty string is not valid prop
         if (isReservedProp(key)) continue
@@ -1192,6 +1194,7 @@ function baseCreateRenderer(
     // mounting
     const compatMountInstance =
       __COMPAT__ && initialVNode.isCompatRoot && initialVNode.component
+    // 这里返回的是一个全部属性都为空的对象
     const instance: ComponentInternalInstance =
       compatMountInstance ||
       (initialVNode.component = createComponentInstance(
@@ -1219,6 +1222,7 @@ function baseCreateRenderer(
       if (__DEV__) {
         startMeasure(instance, `init`)
       }
+      // 对instance进行初始化，为刚刚创建的初始化组件实例属性赋值
       setupComponent(instance)
       if (__DEV__) {
         endMeasure(instance, `init`)
@@ -1239,6 +1243,7 @@ function baseCreateRenderer(
       return
     }
 
+    // 将effect包裹副作用函数
     setupRenderEffect(
       instance,
       initialVNode,
@@ -1372,6 +1377,7 @@ function baseCreateRenderer(
           if (__DEV__) {
             startMeasure(instance, `patch`)
           }
+          // 组件进行挂载，子组件vnode挂载
           patch(
             null,
             subTree,
@@ -2315,6 +2321,7 @@ function baseCreateRenderer(
     return hostNextSibling((vnode.anchor || vnode.el)!)
   }
 
+  // 传入render函数进行patch
   const render: RootRenderFunction = (vnode, container, isSVG) => {
     if (vnode == null) {
       if (container._vnode) {

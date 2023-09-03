@@ -819,6 +819,7 @@ export function finishComponentSetup(
             extend(finalCompilerOptions.compatConfig, Component.compatConfig)
           }
         }
+        // 编译模板生成render函数
         Component.render = compile(template, finalCompilerOptions)
         if (__DEV__) {
           endMeasure(instance, `compile`)

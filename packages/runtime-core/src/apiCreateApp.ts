@@ -188,7 +188,7 @@ export type CreateAppFunction<HostElement> = (
 let uid = 0
 
 export function createAppAPI<HostElement>(
-  render: RootRenderFunction<HostElement>,
+  render: RootRenderFunction<HostElement>, // renderer.ts 52
   hydrate?: RootHydrateFunction
 ): CreateAppFunction<HostElement> {
   return function createApp(rootComponent, rootProps = null) {
@@ -305,6 +305,7 @@ export function createAppAPI<HostElement>(
                 ` you need to unmount the previous app by calling \`app.unmount()\` first.`
             )
           }
+          // 将传入的更组件转化为vnode对象。
           const vnode = createVNode(
             rootComponent as ConcreteComponent,
             rootProps
@@ -323,6 +324,7 @@ export function createAppAPI<HostElement>(
           if (isHydrate && hydrate) {
             hydrate(vnode as VNode<Node, Element>, rootContainer as any)
           } else {
+            // 挂载
             render(vnode, rootContainer, isSVG)
           }
           isMounted = true
