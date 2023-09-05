@@ -271,6 +271,7 @@ function doWatch(
 
   if (cb && deep) {
     const baseGetter = getter
+    // 循环将source中的属性全部触发get value 收集依赖
     getter = () => traverse(baseGetter())
   }
 
