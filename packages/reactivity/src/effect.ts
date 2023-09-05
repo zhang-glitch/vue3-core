@@ -356,7 +356,7 @@ export function triggerEffects(
   const effects = isArray(dep) ? dep : [...dep]
   // 2s后触发reactive setter方法，就会触发收集的依赖。
   for (const effect of effects) {
-    // 收集的是computed回调时
+    // 收集的是computed回调时。先执行computed reactiveEffect,防止出现死循环
     if (effect.computed) {
       triggerEffect(effect, debuggerEventExtraInfo)
     }

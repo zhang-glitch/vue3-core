@@ -313,6 +313,7 @@ function doWatch(
     }
     if (cb) {
       // watch(source, cb)
+      // 此时已经触发了reactive的setter方法，将值设置成最新值。再次执行getter，获取最新值
       const newValue = effect.run()
       if (
         deep ||
@@ -330,6 +331,7 @@ function doWatch(
         if (cleanup) {
           cleanup()
         }
+        // 统一执行回调，cb就是watchCallback
         callWithAsyncErrorHandling(cb, instance, ErrorCodes.WATCH_CALLBACK, [
           newValue,
           // pass undefined as the old value when it's changed for the first time
@@ -363,7 +365,7 @@ function doWatch(
     if (instance) job.id = instance.uid
     scheduler = () => queueJob(job)
   }
-
+  // 创建`ReactiveEffect`对象，watch getter作为fn， watchCallback作为scheduler
   const effect = new ReactiveEffect(getter, scheduler)
 
   if (__DEV__) {

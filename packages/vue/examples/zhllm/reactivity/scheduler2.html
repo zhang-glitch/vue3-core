@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reactive</title>
+  <script src="../../../dist/vue.global.js"></script>
+</head>
+<body>
+  <script>
+    const { reactive, effect, queuePostFlushCb } = Vue
+
+    const obj = reactive({
+      age: 1
+    })
+
+    effect(() => {
+      console.log("=======", obj.age)
+    }, {
+      scheduler() {
+        queuePostFlushCb(() => {
+          console.log("=======", obj.age)
+        })
+      }
+    })
+
+    obj.age = 2
+    obj.age = 3
+    console.log("执行结束！")
+  </script>
+</body>
+</html>

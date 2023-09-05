@@ -43,6 +43,7 @@ export class ComputedRefImpl<T> {
   ) {
     // getter 是computed的回调
     this.effect = new ReactiveEffect(getter, () => {
+      // 脏数据为false。只要是reactive依赖改变，就会触发setter来执行这里的回调
       if (!this._dirty) {
         this._dirty = true
         // 触发 () => {
@@ -61,13 +62,13 @@ export class ComputedRefImpl<T> {
   get value() {
     // the computed ref may get wrapped by other proxies e.g. readonly() #3376
     const self = toRaw(this)
-    // 依赖收集，effect回调被收集
+    // 将当前computed对象传入，依赖收集挂载到当前computed的dep上，effect回调被收集
     trackRefValue(self)
     // 第一次进入，computed回调被执行。然后触发reactive 的 getter方法，收集computed回调。（activeEffect = this 其实也就是收集this.effect对象）
     // 2s后触发reactive 的 setter 方法。
     if (self._dirty || !self._cacheable) {
       self._dirty = false
-      // 返回computed回调的值
+      // 执行传入的computed回调，返回computed回调的值
       self._value = self.effect.run()!
     }
     return self._value
@@ -107,6 +108,7 @@ export function computed<T>(
     setter = getterOrOptions.set
   }
 
+  // 创建一个computed对象
   const cRef = new ComputedRefImpl(getter, setter, onlyGetter || !setter, isSSR)
 
   if (__DEV__ && debugOptions && !isSSR) {

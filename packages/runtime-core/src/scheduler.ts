@@ -102,6 +102,7 @@ export function queueJob(job: SchedulerJob) {
 function queueFlush() {
   if (!isFlushing && !isFlushPending) {
     isFlushPending = true
+    // 同步代码执行完毕，将job放在微任务队列中执行
     currentFlushPromise = resolvedPromise.then(flushJobs)
   }
 }
@@ -235,6 +236,7 @@ function flushJobs(seen?: CountMap) {
           continue
         }
         // console.log(`running:`, job.id)
+        // 统一处理函数回调
         callWithErrorHandling(job, null, ErrorCodes.SCHEDULER)
       }
     }
