@@ -379,6 +379,7 @@ function doWatch(
     if (immediate) {
       job()
     } else {
+      // 触发getter函数，拿到值保存
       oldValue = effect.run()
     }
   } else if (flush === 'post') {

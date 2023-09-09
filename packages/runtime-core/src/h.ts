@@ -171,14 +171,16 @@ export function h<P>(
 ): VNode
 
 // Actual implementation
+// createVnode才是真正创建vnode的函数
 export function h(type: any, propsOrChildren?: any, children?: any): VNode {
   const l = arguments.length
   // 可能传递的是props或者children
   if (l === 2) {
-    // 传入对象
+    // 传入对象，如果不是vnode，那么将作为props
     if (isObject(propsOrChildren) && !isArray(propsOrChildren)) {
       // single vnode without props
-      if (isVNode(propsOrChildren)) { // 判断是否是一个组件 内部__v_isVNode可以判断是否是组件
+      if (isVNode(propsOrChildren)) {
+        // 判断是否是一个组件 内部__v_isVNode可以判断是否是组件
         // createVNode 最后一个参数只能接受数组
         return createVNode(type, null, [propsOrChildren])
       }
@@ -192,6 +194,7 @@ export function h(type: any, propsOrChildren?: any, children?: any): VNode {
     }
   } else {
     if (l > 3) {
+      // 如果传入多个参数，他会将第三位往后的都作为children
       children = Array.prototype.slice.call(arguments, 2)
     } else if (l === 3 && isVNode(children)) {
       children = [children]

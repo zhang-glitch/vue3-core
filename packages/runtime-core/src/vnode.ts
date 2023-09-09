@@ -504,6 +504,14 @@ export const createVNode = (
   __DEV__ ? createVNodeWithArgsTransform : _createVNode
 ) as typeof _createVNode
 
+// 打标记，处理props等等
+/**
+ * patchflag: 静态节点做标记。（区分静态和动态节点）https://template-explorer.vuejs.org/
+ * props: 增强class, style等等，事件缓存处理
+ * shapeFlag: 标记当前节点类型
+ * currentBlock: 标记静态节点，在后面做静态节点作用域提升
+ * cacheHandler: 在处理事件props时，会对事件进行缓存
+ */
 function _createVNode(
   type: VNodeTypes | ClassComponent | typeof NULL_DYNAMIC_COMPONENT,
   props: (Data & VNodeProps) | null = null,
@@ -567,6 +575,7 @@ function _createVNode(
   }
 
   // encode the vnode type information into a bitmap
+  // 在创建vnode时先确定type的shapeFlag，然后处理孩子节点时，将其做按位或运算
   const shapeFlag = isString(type)
     ? ShapeFlags.ELEMENT
     : __FEATURE_SUSPENSE__ && isSuspense(type)
@@ -764,8 +773,10 @@ export function normalizeChildren(vnode: VNode, children: unknown) {
   if (children == null) {
     children = null
   } else if (isArray(children)) {
+    // 数组
     type = ShapeFlags.ARRAY_CHILDREN
   } else if (typeof children === 'object') {
+    // 插槽
     if (shapeFlag & (ShapeFlags.ELEMENT | ShapeFlags.TELEPORT)) {
       // Normalize slot to plain children for plain element and Teleport
       const slot = (children as any).default
@@ -797,9 +808,11 @@ export function normalizeChildren(vnode: VNode, children: unknown) {
       }
     }
   } else if (isFunction(children)) {
+    // 函数
     children = { default: children, _ctx: currentRenderingInstance }
     type = ShapeFlags.SLOTS_CHILDREN
   } else {
+    // 字符串
     children = String(children)
     // force teleport children to array so it can be moved around
     if (shapeFlag & ShapeFlags.TELEPORT) {

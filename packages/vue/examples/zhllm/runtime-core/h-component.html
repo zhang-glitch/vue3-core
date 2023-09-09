@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <script src="../../../dist/vue.global.js"></script>
+  <style>
+    .actvie {
+      color: red;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="app"></div>
+  <script>
+    const { h, render } = Vue
+
+    const component = {
+      render() {
+        // const vnode = h("div", "一个compoennt组件")
+        // 等价于
+        const vnode = {
+          __v_isVNode: true,
+          type: "div",
+          children: "一个component组件",
+          shapeFlag: 9
+        }
+        return vnode
+      }
+    }
+
+    // 先执行这个h函数获取vnode
+    // const vNode = h(component)
+    // 等价于
+    const vNode = {
+      __v_isVNode: true,
+      type: component,
+      shapeFlag: 4
+    }
+
+    render(vNode, document.getElementById("app"))
+    console.log("vnode", vNode)
+  </script>
+</body>
+
+</html>
