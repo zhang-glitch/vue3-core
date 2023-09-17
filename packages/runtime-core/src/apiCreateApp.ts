@@ -187,6 +187,7 @@ export type CreateAppFunction<HostElement> = (
 
 let uid = 0
 
+// 这里就是调用createApp需要执行的函数了
 export function createAppAPI<HostElement>(
   render: RootRenderFunction<HostElement>, // renderer.ts 52
   hydrate?: RootHydrateFunction
@@ -305,7 +306,7 @@ export function createAppAPI<HostElement>(
                 ` you need to unmount the previous app by calling \`app.unmount()\` first.`
             )
           }
-          // 将传入的更组件转化为vnode对象。
+          // 将传入的根组件(APP)转化为vnode对象。
           const vnode = createVNode(
             rootComponent as ConcreteComponent,
             rootProps

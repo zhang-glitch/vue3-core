@@ -337,6 +337,7 @@ function baseCreateRenderer(
     setDevtoolsHook(target.__VUE_DEVTOOLS_GLOBAL_HOOK__, target)
   }
 
+  // 获取寄主环境的dom操作api
   const {
     insert: hostInsert,
     remove: hostRemove,
@@ -354,6 +355,7 @@ function baseCreateRenderer(
 
   // Note: functions inside this closure should use `const xxx = () => {}`
   // style in order to prevent being inlined by minifiers.
+  // 处理不同类型的挂载操作。
   const patch: PatchFn = (
     n1,
     n2,
@@ -410,6 +412,7 @@ function baseCreateRenderer(
         )
         break
       default:
+        // 1 | 8 && 1
         if (shapeFlag & ShapeFlags.ELEMENT) {
           processElement(
             n1,
@@ -423,6 +426,7 @@ function baseCreateRenderer(
             optimized
           )
         } else if (shapeFlag & ShapeFlags.COMPONENT) {
+          // 1 | 8 && 6
           processComponent(
             n1,
             n2,
@@ -573,6 +577,7 @@ function baseCreateRenderer(
     hostRemove(anchor!)
   }
 
+  // 原生dom挂载逻辑处理（patch, mount）
   const processElement = (
     n1: VNode | null,
     n2: VNode,
@@ -632,6 +637,7 @@ function baseCreateRenderer(
 
     // mount children first, since some props may rely on child content
     // being already rendered, e.g. `<select value>`
+    // 区分孩子节点挂挂载
     if (shapeFlag & ShapeFlags.TEXT_CHILDREN) {
       hostSetElementText(el, vnode.children as string)
     } else if (shapeFlag & ShapeFlags.ARRAY_CHILDREN) {
@@ -798,6 +804,7 @@ function baseCreateRenderer(
     slotScopeIds: string[] | null,
     optimized: boolean
   ) => {
+    // 获取根节点并赋值给newVNode
     const el = (n2.el = n1.el!)
     let { patchFlag, dynamicChildren, dirs } = n2
     // #1426 take the old vnode's patch flag into account since user may clone a
@@ -987,6 +994,7 @@ function baseCreateRenderer(
     }
   }
 
+  //处理props挂载操作
   const patchProps = (
     el: RendererElement,
     vnode: VNode,
@@ -1303,6 +1311,7 @@ function baseCreateRenderer(
     isSVG,
     optimized
   ) => {
+    // 作为effect fn参数传递。被依赖收集起来，当依赖发生变化，就会被调用。
     const componentUpdateFn = () => {
       if (!instance.isMounted) {
         let vnodeHook: VNodeHook | null | undefined
@@ -1370,6 +1379,7 @@ function baseCreateRenderer(
           if (__DEV__) {
             startMeasure(instance, `render`)
           }
+          // 创建组件vnode进行挂载
           const subTree = (instance.subTree = renderComponentRoot(instance))
           if (__DEV__) {
             endMeasure(instance, `render`)

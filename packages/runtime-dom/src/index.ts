@@ -62,7 +62,14 @@ export const hydrate = ((...args) => {
   ensureHydrationRenderer().hydrate(...args)
 }) as RootHydrateFunction
 
+// 暴露创建vue实例api
 export const createApp = ((...args) => {
+  // ensureRenderer 这个方法就是最终调用baseCreateRenderer返回的 对象
+  // return {
+  //   render,
+  //   hydrate,
+  //   createApp: createAppAPI(render, hydrate) // runtime/core/src/apiCreateApp 中的createAppAPI() 内部返回createApp函数，初始化很多对象属性（use, component, directive, mount, ...）
+  // }
   const app = ensureRenderer().createApp(...args)
 
   if (__DEV__) {
@@ -71,7 +78,9 @@ export const createApp = ((...args) => {
   }
 
   const { mount } = app
+  // 重写mount方法。
   app.mount = (containerOrSelector: Element | ShadowRoot | string): any => {
+    // 标准化挂载的dom节点。使其可以直接传入选择器。
     const container = normalizeContainer(containerOrSelector)
     if (!container) return
 
