@@ -73,6 +73,7 @@ export function renderComponentRoot(
       // withProxy is a proxy with a different `has` trap only for
       // runtime-compiled render functions using `with` block.
       const proxyToUse = withProxy || proxy
+      // 执行render函数，改变this执行，并返回vnode
       result = normalizeVNode(
         render!.call(
           proxyToUse,

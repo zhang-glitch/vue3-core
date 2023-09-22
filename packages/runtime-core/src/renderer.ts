@@ -1379,7 +1379,7 @@ function baseCreateRenderer(
           if (__DEV__) {
             startMeasure(instance, `render`)
           }
-          // 创建组件vnode进行挂载
+          // 创建组件vnode进行挂载，如果有状态组件将会处理data数据，将其转化成响应式数据
           const subTree = (instance.subTree = renderComponentRoot(instance))
           if (__DEV__) {
             endMeasure(instance, `render`)
