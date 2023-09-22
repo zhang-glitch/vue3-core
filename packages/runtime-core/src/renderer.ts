@@ -1321,6 +1321,7 @@ function baseCreateRenderer(
 
         toggleRecurse(instance, false)
         // beforeMount hook
+        // 组件挂载之前执行
         if (bm) {
           invokeArrayFns(bm)
         }
@@ -1403,6 +1404,7 @@ function baseCreateRenderer(
           initialVNode.el = subTree.el
         }
         // mounted hook
+        //组件挂载之后执行
         if (m) {
           queuePostRenderEffect(m, parentSuspense)
         }
@@ -1476,6 +1478,7 @@ function baseCreateRenderer(
         }
 
         // beforeUpdate hook
+        // beforeUpdate钩子触发
         if (bu) {
           invokeArrayFns(bu)
         }
@@ -1495,6 +1498,7 @@ function baseCreateRenderer(
         if (__DEV__) {
           startMeasure(instance, `render`)
         }
+        // 当依赖发生变化，创建新的vnode
         const nextTree = renderComponentRoot(instance)
         if (__DEV__) {
           endMeasure(instance, `render`)
@@ -1505,6 +1509,7 @@ function baseCreateRenderer(
         if (__DEV__) {
           startMeasure(instance, `patch`)
         }
+        // 组件更新
         patch(
           prevTree,
           nextTree,
@@ -1527,6 +1532,7 @@ function baseCreateRenderer(
           updateHOCHostEl(instance, nextTree.el)
         }
         // updated hook
+        // updated钩子触发
         if (u) {
           queuePostRenderEffect(u, parentSuspense)
         }

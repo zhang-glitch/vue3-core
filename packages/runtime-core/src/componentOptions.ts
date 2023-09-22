@@ -601,6 +601,7 @@ export function applyOptions(instance: ComponentInternalInstance) {
 
   // call beforeCreate first before accessing other options since
   // the hook may mutate resolved options (#2791)
+  // beforeCreate钩子执行
   if (options.beforeCreate) {
     callHook(options.beforeCreate, instance, LifecycleHooks.BEFORE_CREATE)
   }
@@ -789,6 +790,7 @@ export function applyOptions(instance: ComponentInternalInstance) {
     })
   }
 
+  // 当一些处理options触发完毕后执行created
   if (created) {
     callHook(created, instance, LifecycleHooks.CREATED)
   }
@@ -804,6 +806,8 @@ export function applyOptions(instance: ComponentInternalInstance) {
     }
   }
 
+  // 注册hooks(除了beforeCreate, created之外)
+  //在instance中对应的属性（bm, m, bu, u, a,...）中放入对应的hooks。
   registerLifecycleHook(onBeforeMount, beforeMount)
   registerLifecycleHook(onMounted, mounted)
   registerLifecycleHook(onBeforeUpdate, beforeUpdate)

@@ -716,6 +716,7 @@ export function handleSetupResult(
       // set it as ssrRender instead.
       instance.ssrRender = setupResult
     } else {
+      // 将setup返回值作为instance的render属性值
       instance.render = setupResult as InternalRenderFunction
     }
   } else if (isObject(setupResult)) {
@@ -842,7 +843,7 @@ export function finishComponentSetup(
   if (__FEATURE_OPTIONS_API__ && !(__COMPAT__ && skipOptions)) {
     setCurrentInstance(instance)
     pauseTracking()
-    // 处理options api数据
+    // 处理options api数据。兼容·vue3.例如声明周期函数等等
     applyOptions(instance)
     resetTracking()
     unsetCurrentInstance()
