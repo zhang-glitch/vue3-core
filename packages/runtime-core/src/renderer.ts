@@ -1893,6 +1893,7 @@ function baseCreateRenderer(
     // [i ... e2 + 1]: a b [e d c h] f g
     // i = 2, e1 = 4, e2 = 5
     else {
+      // 从未比较的位置开始的
       const s1 = i // prev starting index
       const s2 = i // next starting index
 
@@ -1933,6 +1934,7 @@ function baseCreateRenderer(
       // used for determining longest stable subsequence
       // 新节点下标最为index，旧节点下标作为value
       const newIndexToOldIndexMap = new Array(toBePatched)
+      // 将新节点和旧节点下标进行一一映射
       for (i = 0; i < toBePatched; i++) newIndexToOldIndexMap[i] = 0
 
       // 循环旧节点
@@ -1987,12 +1989,13 @@ function baseCreateRenderer(
 
       // 5.3 move and mount
       // generate longest stable subsequence only when nodes have moved
-      // 进行节点移动，根据上面生成好的节点。对照新节点位置进行移动到正确的位置
+      // 进行节点移动，根据上面生成好的节点。对照新节点位置进行移动到正确的位置。或者进行新节点单独的挂载
       const increasingNewIndexSequence = moved
         ? getSequence(newIndexToOldIndexMap)
         : EMPTY_ARR
       j = increasingNewIndexSequence.length - 1
       // looping backwards so that we can use last patched node as anchor
+      // 循环未修补节点次数，进行移动或者挂载单独新节点
       for (i = toBePatched - 1; i >= 0; i--) {
         const nextIndex = s2 + i
         const nextChild = c2[nextIndex] as VNode
