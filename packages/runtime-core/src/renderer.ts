@@ -1770,6 +1770,7 @@ function baseCreateRenderer(
   }
 
   // can be all-keyed or mixed
+  // diff比对
   const patchKeyedChildren = (
     c1: VNode[],
     c2: VNodeArrayChildren,
@@ -1787,6 +1788,7 @@ function baseCreateRenderer(
     let e2 = l2 - 1 // next ending index
 
     // 1. sync from start
+    // 自前向后
     // (a b) c
     // (a b) d e
     while (i <= e1 && i <= e2) {
@@ -1813,6 +1815,7 @@ function baseCreateRenderer(
     }
 
     // 2. sync from end
+    // 自后向前，此时i不变化
     // a (b c)
     // d e (b c)
     while (i <= e1 && i <= e2) {
@@ -1840,6 +1843,7 @@ function baseCreateRenderer(
     }
 
     // 3. common sequence + mount
+    // 新节点多于旧节点
     // (a b)
     // (a b) c
     // i = 2, e1 = 1, e2 = 2
@@ -1884,6 +1888,7 @@ function baseCreateRenderer(
     }
 
     // 5. unknown sequence
+    // 只要是乱序的vnode就会到这进行diff
     // [i ... e1 + 1]: a b [c d e] f g
     // [i ... e2 + 1]: a b [e d c h] f g
     // i = 2, e1 = 4, e2 = 5
@@ -1892,6 +1897,7 @@ function baseCreateRenderer(
       const s2 = i // next starting index
 
       // 5.1 build key:index map for newChildren
+      // 保存新节点key与index的映射
       const keyToNewIndexMap: Map<string | number | symbol, number> = new Map()
       for (i = s2; i <= e2; i++) {
         const nextChild = (c2[i] = optimized
@@ -1911,8 +1917,11 @@ function baseCreateRenderer(
 
       // 5.2 loop through old children left to be patched and try to patch
       // matching nodes & remove nodes that are no longer present
+      // 循环旧节点，打补丁新节点
       let j
+      // 已修补的节点
       let patched = 0
+      // 待修补的节点
       const toBePatched = e2 - s2 + 1
       let moved = false
       // used to track whether any node has moved
@@ -1922,17 +1931,21 @@ function baseCreateRenderer(
       // and oldIndex = 0 is a special value indicating the new node has
       // no corresponding old node.
       // used for determining longest stable subsequence
+      // 新节点下标最为index，旧节点下标作为value
       const newIndexToOldIndexMap = new Array(toBePatched)
       for (i = 0; i < toBePatched; i++) newIndexToOldIndexMap[i] = 0
 
+      // 循环旧节点
       for (i = s1; i <= e1; i++) {
         const prevChild = c1[i]
+        // ，新节点修补完毕后，卸载多余的旧节点
         if (patched >= toBePatched) {
           // all new children have been patched so this can only be a removal
           unmount(prevChild, parentComponent, parentSuspense, true)
           continue
         }
         let newIndex
+        // 取出当前旧节点中的key，在map对象中查找当前key对应的新节点下标
         if (prevChild.key != null) {
           newIndex = keyToNewIndexMap.get(prevChild.key)
         } else {
@@ -1947,6 +1960,7 @@ function baseCreateRenderer(
             }
           }
         }
+        // 表示旧节点在新节点对应的map对象中没有找到。所以写在旧节点
         if (newIndex === undefined) {
           unmount(prevChild, parentComponent, parentSuspense, true)
         } else {
@@ -1973,6 +1987,7 @@ function baseCreateRenderer(
 
       // 5.3 move and mount
       // generate longest stable subsequence only when nodes have moved
+      // 进行节点移动，根据上面生成好的节点。对照新节点位置进行移动到正确的位置
       const increasingNewIndexSequence = moved
         ? getSequence(newIndexToOldIndexMap)
         : EMPTY_ARR
@@ -1981,8 +1996,10 @@ function baseCreateRenderer(
       for (i = toBePatched - 1; i >= 0; i--) {
         const nextIndex = s2 + i
         const nextChild = c2[nextIndex] as VNode
+        // 找到挂载的锚点（表示插入到谁前面）
         const anchor =
           nextIndex + 1 < l2 ? (c2[nextIndex + 1] as VNode).el : parentAnchor
+        // 没有找到旧节点，直接挂在多余的新节点
         if (newIndexToOldIndexMap[i] === 0) {
           // mount new
           patch(
